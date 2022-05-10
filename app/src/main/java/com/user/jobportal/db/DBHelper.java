@@ -30,6 +30,14 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_PACKAGE_DETAILS = "package_details";
     private static final String COLUMN_APPLIED_STATUS = "status";
 
+    private static final String TABLE_USER = "user_table";
+    private static final String COLUMN_USER_NAME = "user_name";
+    private static final String COLUMN_USER_ID = "user_id";
+    private static final String COLUMN_USER_MOBILE = "user_mobile";
+    private static final String COLUMN_USER_EMAIL = "user_email";
+    private static final String COLUMN_USER_PWD = "user_pwd";
+    private static final String COLUMN_USER_ADDRESS = "user_address";
+
     public DBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
@@ -58,12 +66,30 @@ public class DBHelper extends SQLiteOpenHelper {
                 COLUMN_EMAIL + " TEXT, " +
                 //9
                 COLUMN_APPLIED_STATUS + " TEXT); ";
+
+        String user = "CREATE TABLE " + TABLE_USER +
+                // 0
+                "(" + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                //1
+                COLUMN_USER_NAME + " TEXT, " +
+                //2
+                COLUMN_USER_MOBILE + " TEXT, " +
+                //3
+                COLUMN_USER_EMAIL + " TEXT, " +
+                //4
+                COLUMN_USER_ADDRESS + " TEXT, " +
+                //5
+                COLUMN_USER_PWD + " TEXT); ";
+
+        sqLiteDatabase.execSQL(user);
         sqLiteDatabase.execSQL(jobs);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_JOB);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         onCreate(sqLiteDatabase);
     }
 
@@ -85,8 +111,18 @@ public class DBHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public Cursor getJobList(String adminId) {
-        String query = "select * from " + TABLE_NAME_JOB + " WHERE "  + COLUMN_ADMIN_ID + "=" + adminId;
+    public Cursor getJobListByAdminId(String adminId) {
+        String query = "select * from " + TABLE_NAME_JOB + " WHERE " + COLUMN_ADMIN_ID + "=" + adminId;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public Cursor getAllJobList() {
+        String query = "select * from " + TABLE_NAME_JOB;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
         if (db != null) {
@@ -123,5 +159,37 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.delete(TABLE_NAME_JOB, BaseColumns._ID + "=?", new String[]{id});
     }
 
+    public long addUser(String username, String mobile, String email, String address, String pwd) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USER_NAME, username);
+        contentValues.put(COLUMN_USER_MOBILE, mobile);
+        contentValues.put(COLUMN_USER_EMAIL, email);
+        contentValues.put(COLUMN_USER_ADDRESS, address);
+        contentValues.put(COLUMN_USER_PWD, pwd);
+
+        return db.insert(TABLE_USER, null, contentValues);
+    }
+
+    public String loginWithDB(String username, String pwd) {
+        //  String query = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_NAME + "=" + username + " AND " + COLUMN_USER_PWD + "=" + pwd;
+        String query = "Select * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_NAME + " LIKE " + "'" + username + "'" + " AND " + COLUMN_USER_PWD + " LIKE " + "'" + pwd + "'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        String id = null;
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        Log.v("DATABASE", "LOGIN DETAILS COUNT ::" + cursor.getCount());
+        if ((cursor != null ? cursor.getCount() : 0) > 0) {
+            while (cursor.moveToNext()) {
+                id = cursor.getString(0);
+            }
+            Log.v("DATABASE", "LOGIN DETAILS ::" + id);
+            return id;
+        } else {
+            return null;
+        }
+    }
 
 }

@@ -3,7 +3,6 @@ package com.user.jobportal.activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +32,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     private RecyclerView recyclerView;
     private TextView txtNoData;
     private String adminId;
+    private String userId;
     private DBHelper db;
     private List<JobModel> jobList;
     private JobListAdapter adapter;
@@ -62,12 +62,48 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     private void getIntentData() {
         if (getIntent().hasExtra("adminId")) {
             adminId = getIntent().getStringExtra("adminId");
+            userId = getIntent().getStringExtra("userId");
+            if (!adminId.equals("")) {
+                getJobListByAdminIdFromDb();
+            } else if (!userId.equals("")) {
+                getAllJobsList();
+            }
+
         }
-        getJobListFromDb();
     }
 
-    void getJobListFromDb() {
-        Cursor cursor = db.getJobList(adminId);
+    private void getAllJobsList() {
+        Cursor cursor = db.getAllJobList();
+        jobList = new ArrayList<>();
+        if (cursor.getCount() == 0) {
+            txtNoData.setVisibility(View.VISIBLE);
+            // Toast.makeText(getApplicationContext(), "No Data", Toast.LENGTH_SHORT).show();
+        } else {
+            txtNoData.setVisibility(View.GONE);
+
+            while (cursor.moveToNext()) {
+                JobModel model = new JobModel(cursor.getString(1),
+                        cursor.getString(0),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(8),
+                        cursor.getString(5),
+                        cursor.getString(6),
+                        cursor.getString(7),
+                        cursor.getString(9)
+                );
+                jobList.add(model);
+                Log.v(TAG, "JOBS LIST :: ");
+                if (jobList != null && jobList.size() > 0) {
+                    setAdapter();
+                }
+            }
+        }
+    }
+
+    void getJobListByAdminIdFromDb() {
+        Cursor cursor = db.getJobListByAdminId(adminId);
         jobList = new ArrayList<>();
         if (cursor.getCount() == 0) {
             txtNoData.setVisibility(View.VISIBLE);
@@ -120,13 +156,13 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         //noinspection SimplifiableIfStatement
         if (id == R.id.all_jobs) {
             setAdapter();
-           // Toast.makeText(HomeActivity.this, "All Jobs Action clicked", Toast.LENGTH_LONG).show();
+            // Toast.makeText(HomeActivity.this, "All Jobs Action clicked", Toast.LENGTH_LONG).show();
             return true;
         } else if (id == R.id.applied_jobs) {
-           // Toast.makeText(HomeActivity.this, "Applied Jobs Action clicked", Toast.LENGTH_LONG).show();
+            // Toast.makeText(HomeActivity.this, "Applied Jobs Action clicked", Toast.LENGTH_LONG).show();
             return true;
         } else if (id == R.id.logout) {
-           // Toast.makeText(HomeActivity.this, "Logout", Toast.LENGTH_LONG).show();
+            // Toast.makeText(HomeActivity.this, "Logout", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(HomeActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -141,7 +177,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             Log.v(TAG, "HOME RECREATED :: ");
-            getJobListFromDb();
+            getJobListByAdminIdFromDb();
         }
     }
 
@@ -176,7 +212,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
                     Toast.makeText(getApplicationContext(), "Data not Deleted", Toast.LENGTH_SHORT).show();
                 } else {
                     dialogInterface.dismiss();
-                    getJobListFromDb();
+                    getJobListByAdminIdFromDb();
                 }
             }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -56,8 +56,21 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/edt_email"
-                app:layout_constraintBottom_toTopOf="@+id/edt_pwd"/>
+                app:layout_constraintBottom_toTopOf="@+id/edt_address"/>
 
+            <EditText
+                android:id="@+id/edt_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/rounded_rect"
+                android:hint="Enter Address"
+                android:padding="15dp"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edt_mobile"
+                app:layout_constraintBottom_toTopOf="@+id/edt_pwd"/>
             <EditText
                 android:id="@+id/edt_pwd"
                 android:layout_width="match_parent"
@@ -70,11 +83,11 @@
                 android:inputType="phone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edt_mobile"
-                app:layout_constraintBottom_toTopOf="@+id/btn_login"/>
+                app:layout_constraintTop_toBottomOf="@+id/edt_address"
+                app:layout_constraintBottom_toTopOf="@+id/btn_register"/>
 
             <Button
-                android:id="@+id/btn_login"
+                android:id="@+id/btn_register"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Register"
