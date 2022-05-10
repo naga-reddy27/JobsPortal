@@ -54,6 +54,12 @@ public class JobListAdapter extends RecyclerView.Adapter<JobListAdapter.MyViewHo
                 itemClickListener.onItemClick(job, position, "view");
             }
         });
+        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClickListener.onItemClick(job, position, "delete");
+            }
+        });
 
     }
 

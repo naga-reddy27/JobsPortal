@@ -118,5 +118,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 whereArgs);
     }
 
+    public long deleteJob(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_NAME_JOB, BaseColumns._ID + "=?", new String[]{id});
+    }
+
 
 }

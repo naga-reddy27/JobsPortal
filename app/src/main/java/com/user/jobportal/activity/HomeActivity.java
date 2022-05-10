@@ -1,11 +1,13 @@
 package com.user.jobportal.activity;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -26,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements JobListAdapter.ItemClickListener {
-    private final String TAG  = HomeActivity.this.getClass().getSimpleName();
+    private final String TAG = HomeActivity.this.getClass().getSimpleName();
     private FloatingActionButton fab;
     private RecyclerView recyclerView;
     private TextView txtNoData;
@@ -136,7 +138,11 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
 
     @Override
     public void onItemClick(JobModel jobModel, int position, String action) {
-        startAddJobActivity(jobModel, position, action);
+        if (action.equals("delete")) {
+            confirmation(jobModel.getJobId());
+        } else {
+            startAddJobActivity(jobModel, position, action);
+        }
     }
 
     private void startAddJobActivity(JobModel jobModel, Integer pos, String action) {
@@ -146,5 +152,31 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         intent.putExtra("action", action);
         intent.putExtra("pos", pos);
         startActivityForResult(intent, REQUEST_CODE);
+    }
+
+    private void confirmation(String id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+        builder.setTitle("Delete ");
+        builder.setMessage("Are you sure, You want to delete this Job ?");
+        builder.setPositiveButton("Delete ", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                long result = db.deleteJob(id);
+                if (result == -1) {
+                    Toast.makeText(getApplicationContext(), "Data not Deleted", Toast.LENGTH_SHORT).show();
+                } else {
+                    dialogInterface.dismiss();
+                    getJobListFromDb();
+                }
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.create().show();
+
     }
 }
