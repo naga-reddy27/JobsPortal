@@ -67,13 +67,14 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     }
 
     void getJobListFromDb() {
-        Cursor cursor = db.getJobList();
+        Cursor cursor = db.getJobList(adminId);
+        jobList = new ArrayList<>();
         if (cursor.getCount() == 0) {
             txtNoData.setVisibility(View.VISIBLE);
             // Toast.makeText(getApplicationContext(), "No Data", Toast.LENGTH_SHORT).show();
         } else {
             txtNoData.setVisibility(View.GONE);
-            jobList = new ArrayList<>();
+
             while (cursor.moveToNext()) {
                 JobModel model = new JobModel(cursor.getString(1),
                         cursor.getString(0),
@@ -88,7 +89,9 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
                 );
                 jobList.add(model);
                 Log.v(TAG, "JOBS LIST :: ");
-                setAdapter();
+                if (jobList != null && jobList.size() > 0) {
+                    setAdapter();
+                }
             }
         }
     }
@@ -117,11 +120,17 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         //noinspection SimplifiableIfStatement
         if (id == R.id.all_jobs) {
             setAdapter();
-            Toast.makeText(HomeActivity.this, "All Jobs Action clicked", Toast.LENGTH_LONG).show();
+           // Toast.makeText(HomeActivity.this, "All Jobs Action clicked", Toast.LENGTH_LONG).show();
             return true;
         } else if (id == R.id.applied_jobs) {
-            Toast.makeText(HomeActivity.this, "Applied Jobs Action clicked", Toast.LENGTH_LONG).show();
+           // Toast.makeText(HomeActivity.this, "Applied Jobs Action clicked", Toast.LENGTH_LONG).show();
             return true;
+        } else if (id == R.id.logout) {
+           // Toast.makeText(HomeActivity.this, "Logout", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

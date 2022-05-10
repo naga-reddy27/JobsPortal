@@ -85,8 +85,8 @@ public class DBHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public Cursor getJobList() {
-        String query = "select * from " + TABLE_NAME_JOB;
+    public Cursor getJobList(String adminId) {
+        String query = "select * from " + TABLE_NAME_JOB + " WHERE "  + COLUMN_ADMIN_ID + "=" + adminId;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
         if (db != null) {

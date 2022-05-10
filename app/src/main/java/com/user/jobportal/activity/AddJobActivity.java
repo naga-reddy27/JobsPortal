@@ -48,7 +48,7 @@ public class AddJobActivity extends AppCompatActivity {
                 String appliedStatus = "NOT APPLIED";
                 if (validateFields(jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, appliedStatus)) {
                     long result;
-                    if (jobModel.getJobId() != null) {
+                    if (jobModel != null && jobModel.getJobId() != null) {
                         result = db.updateJob(adminId, jobModel.getJobId(), jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, appliedStatus);
                     } else {
                         result = db.addJob(adminId, jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, appliedStatus);
