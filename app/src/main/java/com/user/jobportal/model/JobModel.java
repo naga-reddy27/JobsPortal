@@ -1,6 +1,8 @@
 package com.user.jobportal.model;
 
-public class JobModel {
+import java.io.Serializable;
+
+public class JobModel implements Serializable {
     private String adminId;
     private String jobId;
     private String jobName;

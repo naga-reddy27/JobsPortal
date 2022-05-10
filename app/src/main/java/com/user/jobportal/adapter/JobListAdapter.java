@@ -45,9 +45,16 @@ public class JobListAdapter extends RecyclerView.Adapter<JobListAdapter.MyViewHo
         holder.btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemClickListener.onItemClick(job, position);
+                itemClickListener.onItemClick(job, position, "edit");
             }
         });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClickListener.onItemClick(job, position, "view");
+            }
+        });
+
     }
 
     @Override
@@ -71,6 +78,6 @@ public class JobListAdapter extends RecyclerView.Adapter<JobListAdapter.MyViewHo
     }
 
     public interface ItemClickListener {
-        public void onItemClick(JobModel jobModel, int position);
+        public void onItemClick(JobModel jobModel, int position, String action);
     }
 }

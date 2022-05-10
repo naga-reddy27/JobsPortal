@@ -76,7 +76,7 @@
             <ImageView
                 android:id="@+id/txt_delete_job"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="10dp"
                 android:layout_weight="0.5"
                 android:gravity="center"

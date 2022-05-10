@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements JobListAdapter.ItemClickListener {
+    private final String TAG  = HomeActivity.this.getClass().getSimpleName();
     private FloatingActionButton fab;
     private RecyclerView recyclerView;
     private TextView txtNoData;
@@ -32,6 +34,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     private DBHelper db;
     private List<JobModel> jobList;
     private JobListAdapter adapter;
+    private static final int REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +51,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HomeActivity.this, AddJobActivity.class);
-                intent.putExtra("adminId", adminId);
-                startActivity(intent);
-
+                startAddJobActivity(null, null, "new");
             }
         });
 
@@ -85,6 +85,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
                         cursor.getString(9)
                 );
                 jobList.add(model);
+                Log.v(TAG, "JOBS LIST :: ");
                 setAdapter();
             }
         }
@@ -127,17 +128,23 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            Log.v(TAG, "HOME RECREATED :: ");
+            getJobListFromDb();
+        }
     }
 
     @Override
-    public void onItemClick(JobModel jobModel, int position) {
-        startAddJobActivity(jobModel, position);
+    public void onItemClick(JobModel jobModel, int position, String action) {
+        startAddJobActivity(jobModel, position, action);
     }
 
-    private void startAddJobActivity(JobModel jobModel, int pos) {
+    private void startAddJobActivity(JobModel jobModel, Integer pos, String action) {
         Intent intent = new Intent(HomeActivity.this, AddJobActivity.class);
         intent.putExtra("adminId", adminId);
-        startActivity(intent);
+        intent.putExtra("job", jobModel);
+        intent.putExtra("action", action);
+        intent.putExtra("pos", pos);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 }

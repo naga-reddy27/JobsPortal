@@ -30,16 +30,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_PACKAGE_DETAILS = "package_details";
     private static final String COLUMN_APPLIED_STATUS = "status";
 
-   /* private static final String TABLE_NAME_EVENTS = "my_events";
-    private static final String COLUMN_MANAGER = "manager_id";
-    private static final String COLUMN_EVENT_ID = "id";
-    private static final String COLUMN_EVENT_NAME = "event_name";
-    private static final String COLUMN_EVENT_TIME = "event_time";
-    private static final String COLUMN_EVENT_INFO = "event_info";
-    private static final String COLUMN_EVENT_VENUE = "event_venue";
-    private static final String COLUMN_EVENT_NUMBER = "event_number";
-    private static final String COLUMN_PWD = "pwd";*/
-
     public DBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
@@ -78,7 +68,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public long addJob(String adminId, String jobName, String org, String mobile, String email, String skillsRequired, String packageDetails, String currentAddress, String appliedStatus) {
-        Log.v("TAG", "EVENT INSERT :: " + adminId);
+        Log.v("TAG", "JOBS INSERT :: " + adminId);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_ADMIN_ID, adminId);
@@ -94,6 +84,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return result;
     }
+
     public Cursor getJobList() {
         String query = "select * from " + TABLE_NAME_JOB;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -103,5 +94,29 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return cursor;
     }
+
+    public long updateJob(String adminId, String jobId, String jobName, String org, String mobile, String email, String skillsRequired, String packageDetails, String currentAddress, String appliedStatus) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_JOB_ID, jobId);
+        contentValues.put(COLUMN_ADMIN_ID, adminId);
+        contentValues.put(COLUMN_JOB_NAME, jobName);
+        contentValues.put(COLUMN_ORG, org);
+        contentValues.put(COLUMN_NUMBER, mobile);
+        contentValues.put(COLUMN_EMAIL, email);
+        contentValues.put(COLUMN_REQUIRED_SKILLS, skillsRequired);
+        contentValues.put(COLUMN_PACKAGE_DETAILS, packageDetails);
+        contentValues.put(COLUMN_CURRENT_ADDRESS, currentAddress);
+        contentValues.put(COLUMN_APPLIED_STATUS, appliedStatus);
+
+        // long result = db.update(TABLE_NAME_JOB, contentValues, BaseColumns._ID + "=?", new String[]{jobId});
+        String whereClause = BaseColumns._ID + " = ? AND " + "admin_id" + " = ?"; // HERE ARE OUR CONDITONS STARTS
+        String[] whereArgs = {jobId, adminId};
+        return db.update(TABLE_NAME_JOB,
+                contentValues,
+                whereClause,
+                whereArgs);
+    }
+
 
 }
