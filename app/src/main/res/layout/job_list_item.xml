@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_job_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:padding="10dp"
+            android:text="jobname"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/txt_job_org"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="organisation"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/txt_job_skills"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="skills"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/txt_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="address"
+            android:textSize="12sp" />
+
+        <com.google.android.material.divider.MaterialDivider
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <ImageView
+                android:id="@+id/txt_edit_job"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:padding="2dp"
+                android:src="@drawable/ic_baseline_edit_24"
+                android:textSize="12sp"
+                android:contentDescription="Edit" />
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="1dp"
+                android:layout_height="match_parent" />
+            <ImageView
+                android:id="@+id/txt_delete_job"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:padding="2dp"
+                android:src="@drawable/ic_baseline_delete_24"
+                android:textSize="12sp"
+                android:contentDescription="Delete" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
