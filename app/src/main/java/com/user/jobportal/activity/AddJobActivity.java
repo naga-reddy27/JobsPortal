@@ -46,21 +46,32 @@ public class AddJobActivity extends AppCompatActivity {
                 String packageDetails = edtPackage.getText().toString();
                 String currentDetails = edtCurrentAddress.getText().toString();
                 String appliedStatus = "NOT APPLIED";
-                if (validateFields(jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, appliedStatus)) {
-                    long result;
-                    if (jobModel != null && jobModel.getJobId() != null) {
-                        result = db.updateJob(adminId, jobModel.getJobId(), jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, appliedStatus);
-                    } else {
-                        result = db.addJob(adminId, jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, appliedStatus);
-                    }
+                if (action.equals("more")) {
+                    Toast.makeText(getApplicationContext(), "APPLIED", Toast.LENGTH_SHORT).show();
+                    long result = db.updateJob(jobModel.getAdminId(), jobModel.getJobId(), jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, "Applied");
                     if (result == -1) {
-                        Toast.makeText(AddJobActivity.this, "FAILED ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddJobActivity.this, "Failed to apply", Toast.LENGTH_SHORT).show();
                     } else {
                         setResult(RESULT_OK);
                         finish();
                     }
                 } else {
-                    Toast.makeText(AddJobActivity.this, "Invalid Details, Please enter job details ", Toast.LENGTH_SHORT).show();
+                    if (validateFields(jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, appliedStatus)) {
+                        long result;
+                        if (jobModel != null && jobModel.getJobId() != null) {
+                            result = db.updateJob(adminId, jobModel.getJobId(), jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, appliedStatus);
+                        } else {
+                            result = db.addJob(adminId, jobName, org, mobile, email, requiredSkills, packageDetails, currentDetails, appliedStatus);
+                        }
+                        if (result == -1) {
+                            Toast.makeText(AddJobActivity.this, "FAILED ", Toast.LENGTH_SHORT).show();
+                        } else {
+                            setResult(RESULT_OK);
+                            finish();
+                        }
+                    } else {
+                        Toast.makeText(AddJobActivity.this, "Invalid Details, Please enter job details ", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -85,27 +96,41 @@ public class AddJobActivity extends AppCompatActivity {
                 }
             }
             if (action.equals("view")) {
-                btnAddJob.setVisibility(View.GONE);
-                edtJobName.setEnabled(false);
-                edtOrg.setEnabled(false);
-                edtMobile.setEnabled(false);
-                edtEmail.setEnabled(false);
-                edtPackage.setEnabled(false);
-                edtRequiredSkills.setEnabled(false);
-                edtCurrentAddress.setEnabled(false);
-                btnAddJob.setEnabled(false);
+                setFieldsDisable();
             } else {
+                setFieldsEnable();
+            }
+            if (action.equals("more")) {
+                btnAddJob.setText("Apply");
+                setFieldsDisable();
                 btnAddJob.setVisibility(View.VISIBLE);
-                edtJobName.setEnabled(true);
-                edtOrg.setEnabled(true);
-                edtMobile.setEnabled(true);
-                edtEmail.setEnabled(true);
-                edtPackage.setEnabled(true);
-                edtRequiredSkills.setEnabled(true);
-                edtCurrentAddress.setEnabled(true);
                 btnAddJob.setEnabled(true);
             }
         }
+    }
+
+    public void setFieldsEnable() {
+        btnAddJob.setVisibility(View.VISIBLE);
+        edtJobName.setEnabled(true);
+        edtOrg.setEnabled(true);
+        edtMobile.setEnabled(true);
+        edtEmail.setEnabled(true);
+        edtPackage.setEnabled(true);
+        edtRequiredSkills.setEnabled(true);
+        edtCurrentAddress.setEnabled(true);
+        btnAddJob.setEnabled(true);
+    }
+
+    public void setFieldsDisable() {
+        btnAddJob.setVisibility(View.GONE);
+        edtJobName.setEnabled(false);
+        edtOrg.setEnabled(false);
+        edtMobile.setEnabled(false);
+        edtEmail.setEnabled(false);
+        edtPackage.setEnabled(false);
+        edtRequiredSkills.setEnabled(false);
+        edtCurrentAddress.setEnabled(false);
+        btnAddJob.setEnabled(false);
     }
 
     private boolean validateFields(String jobName, String org, String mobile, String email, String requiredSkills, String packageDetails, String currentDetails, String appliedStatus) {
@@ -114,5 +139,11 @@ public class AddJobActivity extends AppCompatActivity {
         } else {
             return true;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //  moveTaskToBack(true);
     }
 }

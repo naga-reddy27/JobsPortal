@@ -2,6 +2,7 @@ package com.user.jobportal.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText edtPwd;
     private Button btnLogin;
     private DBHelper db;
+    private SharedPreferences sp;
+    public static final String MY_PREF = "user";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
         edtPwd = findViewById(R.id.edt_pwd);
         btnLogin = findViewById(R.id.btn_login);
         db = new DBHelper(LoginActivity.this);
+        sp = getSharedPreferences(MY_PREF,
+                Context.MODE_PRIVATE);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,10 +48,6 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         String userId = db.loginWithDB(username, pwd);
                         if (userId != null) {
-                          /*  SharedPreferences.Editor editor = sp.edit();
-                            editor.putString("id", result);
-                            editor.apply();
-                            editor.commit();*/
                             startHomeActivity("", userId);
                         } else {
                             Toast.makeText(getApplicationContext(), "Enter username and pwd", Toast.LENGTH_SHORT).show();
@@ -66,6 +67,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     void startHomeActivity(String adminId, String userId) {
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("id", userId);
+        editor.putString("adminId", adminId);
+        editor.apply();
+        editor.commit();
         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
         intent.putExtra("adminId", adminId);
         intent.putExtra("userId", userId);

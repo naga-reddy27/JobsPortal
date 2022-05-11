@@ -48,15 +48,28 @@
             android:text="address"
             android:textSize="12sp" />
 
-        <com.google.android.material.divider.MaterialDivider
+        <ImageView
+            android:id="@+id/img_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginRight="10dp"
+            android:padding="10dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_baseline_chevron_right_24"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="More" />
 
+        <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <LinearLayout
+            android:id="@+id/btn_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:weightSum="1">
 
             <ImageView
@@ -65,25 +78,27 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:layout_weight="0.5"
+                android:contentDescription="Edit"
                 android:gravity="center"
                 android:padding="2dp"
                 android:src="@drawable/ic_baseline_edit_24"
-                android:textSize="12sp"
-                android:contentDescription="Edit" />
+                android:textSize="12sp" />
+
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="1dp"
                 android:layout_height="match_parent" />
+
             <ImageView
                 android:id="@+id/txt_delete_job"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
                 android:layout_weight="0.5"
+                android:contentDescription="Delete"
                 android:gravity="center"
                 android:padding="2dp"
                 android:src="@drawable/ic_baseline_delete_24"
-                android:textSize="12sp"
-                android:contentDescription="Delete" />
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

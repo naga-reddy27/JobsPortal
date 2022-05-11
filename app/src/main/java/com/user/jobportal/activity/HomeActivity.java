@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Shader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -37,6 +39,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     private List<JobModel> jobList;
     private JobListAdapter adapter;
     private static final int REQUEST_CODE = 1;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,21 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         txtNoData = findViewById(R.id.nodata);
         db = new DBHelper(HomeActivity.this);
 
-        getIntentData();
+        sp = getSharedPreferences("user",
+                MODE_PRIVATE);
+
+        if (sp.contains("adminId") || sp.contains("id")) {
+            adminId = sp.getString("adminId", "");
+            userId = sp.getString("id", "");
+            Log.v("ADMIN ", "ADMIN ID :: " + adminId);
+            if (!adminId.equals("")) {
+                fab.setVisibility(View.VISIBLE);
+                getJobListByAdminIdFromDb();
+            } else if (!userId.equals("")) {
+                fab.setVisibility(View.GONE);
+                getAllJobsList();
+            }
+        }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,19 +74,6 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
             }
         });
 
-    }
-
-    private void getIntentData() {
-        if (getIntent().hasExtra("adminId")) {
-            adminId = getIntent().getStringExtra("adminId");
-            userId = getIntent().getStringExtra("userId");
-            if (!adminId.equals("")) {
-                getJobListByAdminIdFromDb();
-            } else if (!userId.equals("")) {
-                getAllJobsList();
-            }
-
-        }
     }
 
     private void getAllJobsList() {
@@ -133,7 +137,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     }
 
     public void setAdapter() {
-        adapter = new JobListAdapter(HomeActivity.this, jobList, this);
+        adapter = new JobListAdapter(HomeActivity.this, jobList, adminId, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
         //    recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -177,7 +181,12 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             Log.v(TAG, "HOME RECREATED :: ");
-            getJobListByAdminIdFromDb();
+
+            if (!adminId.equals("")) {
+                getJobListByAdminIdFromDb();
+            } else if (!userId.equals("")) {
+                getAllJobsList();
+            }
         }
     }
 

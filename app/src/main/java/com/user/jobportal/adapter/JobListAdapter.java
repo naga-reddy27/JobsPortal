@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,10 +21,12 @@ public class JobListAdapter extends RecyclerView.Adapter<JobListAdapter.MyViewHo
     private Context context;
     private List<JobModel> jobsList;
     private ItemClickListener itemClickListener;
+    private String adminId;
 
-    public JobListAdapter(Context context, List<JobModel> jobsList, ItemClickListener itemClickListener) {
+    public JobListAdapter(Context context, List<JobModel> jobsList, String adminId, ItemClickListener itemClickListener) {
         this.context = context;
         this.jobsList = jobsList;
+        this.adminId = adminId;
         this.itemClickListener = itemClickListener;
     }
 
@@ -60,6 +63,19 @@ public class JobListAdapter extends RecyclerView.Adapter<JobListAdapter.MyViewHo
                 itemClickListener.onItemClick(job, position, "delete");
             }
         });
+        if (adminId.equals("")) {
+            holder.btnLayout.setVisibility(View.GONE);
+            holder.imgMore.setVisibility(View.VISIBLE);
+        } else {
+            holder.btnLayout.setVisibility(View.VISIBLE);
+            holder.imgMore.setVisibility(View.GONE);
+        }
+        holder.imgMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClickListener.onItemClick(job, position, "more");
+            }
+        });
 
     }
 
@@ -71,6 +87,8 @@ public class JobListAdapter extends RecyclerView.Adapter<JobListAdapter.MyViewHo
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView txtJobName, txtOrg, txtSkills, txtAddress;
         private ImageView btnEdit, btnDelete;
+        private LinearLayout btnLayout;
+        private ImageView imgMore;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,6 +98,8 @@ public class JobListAdapter extends RecyclerView.Adapter<JobListAdapter.MyViewHo
             txtAddress = itemView.findViewById(R.id.txt_address);
             btnDelete = itemView.findViewById(R.id.txt_delete_job);
             btnEdit = itemView.findViewById(R.id.txt_edit_job);
+            btnLayout = itemView.findViewById(R.id.btn_layout);
+            imgMore = itemView.findViewById(R.id.img_more);
         }
     }
 

@@ -88,8 +88,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_JOB);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_JOB);
         onCreate(sqLiteDatabase);
     }
 
@@ -112,7 +112,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getJobListByAdminId(String adminId) {
-        String query = "select * from " + TABLE_NAME_JOB + " WHERE " + COLUMN_ADMIN_ID + "=" + adminId;
+        String query = " select * from " + TABLE_NAME_JOB + " WHERE " + COLUMN_ADMIN_ID + "=" + adminId;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
         if (db != null) {
@@ -192,4 +192,13 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean checkUsernameAndPwd(String userName, String pwd) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery("SELECT * FROM user_table WHERE user_name = ? and user_pwd = ?", new String[]{userName, pwd});
+        if (cursor.getCount() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
