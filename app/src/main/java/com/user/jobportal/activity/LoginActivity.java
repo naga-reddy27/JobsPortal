@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         db = new DBHelper(LoginActivity.this);
         sp = getSharedPreferences(MY_PREF,
                 Context.MODE_PRIVATE);
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -42,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
                 String pwd = edtPwd.getText().toString();
                 if (!username.isEmpty() && !pwd.isEmpty()) {
                     if ((username.equals("admin1") && pwd.equals("12345"))) {
-                        startHomeActivity("1", "", "admin2");
+                        startHomeActivity("1", "", "admin1");
                     } else if ((username.equals("admin2") && pwd.equals("54321"))) {
                         startHomeActivity("2", "", "admin2");
                     } else {

@@ -219,13 +219,21 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
             }
             return true;
         } else if (id == R.id.logout) {
-            Intent intent = new Intent(HomeActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
+            logOut();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logOut() {
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear();
+        editor.apply();
+        editor.commit();
+        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private void getAppliedJobListByUserId() {
