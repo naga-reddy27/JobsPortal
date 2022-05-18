@@ -12,10 +12,13 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Shader;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +34,7 @@ import java.util.List;
 public class HomeActivity extends AppCompatActivity implements JobListAdapter.ItemClickListener {
     private final String TAG = HomeActivity.this.getClass().getSimpleName();
     private FloatingActionButton fab;
+    private EditText edtSearchJob;
     private RecyclerView recyclerView;
     private TextView txtNoData;
     private String adminId;
@@ -49,6 +53,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
 
         fab = findViewById(R.id.fab_button);
         recyclerView = findViewById(R.id.recycler_view);
+        edtSearchJob = findViewById(R.id.search_view);
         txtNoData = findViewById(R.id.nodata);
         db = new DBHelper(HomeActivity.this);
 
@@ -77,7 +82,35 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
                 startAddJobActivity(null, null, "new");
             }
         });
+        edtSearchJob.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                filterList(editable.toString());
+            }
+        });
+
+    }
+
+    private void filterList(String str) {
+        List<JobModel> filterList = new ArrayList<>();
+        if (jobList != null && jobList.size() > 0) {
+            for (JobModel job : jobList) {
+                if (job.getJobName().toLowerCase().contains(str.toLowerCase()) || job.getOrg().toLowerCase().contains(str.toLowerCase())) {
+                    filterList.add(job);
+                }
+            }
+        }
+        adapter.filteredList(filterList);
     }
 
     private void getAllJobsList() {

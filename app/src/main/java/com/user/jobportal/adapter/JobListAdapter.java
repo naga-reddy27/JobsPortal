@@ -21,6 +21,7 @@ import com.user.jobportal.activity.HomeActivity;
 import com.user.jobportal.db.DBHelper;
 import com.user.jobportal.model.JobModel;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,6 +120,10 @@ public class JobListAdapter extends RecyclerView.Adapter<JobListAdapter.MyViewHo
             }
         }
 
+    }
+    public void filteredList(List<JobModel> jobsList){
+        this.jobsList = jobsList;
+        notifyDataSetChanged();
     }
 
     @Override

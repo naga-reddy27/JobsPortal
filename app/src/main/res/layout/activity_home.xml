@@ -6,10 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".activity.HomeActivity">
 
+    <EditText
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/ic_baseline_search_24"
+        android:drawablePadding="8dp"
+        android:hint="Search Job Here"
+        android:padding="15dp"
+        android:layout_margin="2dp"
+        android:background="@drawable/rounded_rect"
+        android:layout_alignParentTop="true" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/search_view"
         android:visibility="visible" />
 
     <TextView
