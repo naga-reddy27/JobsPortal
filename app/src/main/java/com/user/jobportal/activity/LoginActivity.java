@@ -42,13 +42,13 @@ public class LoginActivity extends AppCompatActivity {
                 String pwd = edtPwd.getText().toString();
                 if (!username.isEmpty() && !pwd.isEmpty()) {
                     if ((username.equals("admin1") && pwd.equals("12345"))) {
-                        startHomeActivity("1", "");
+                        startHomeActivity("1", "", "admin2");
                     } else if ((username.equals("admin2") && pwd.equals("54321"))) {
-                        startHomeActivity("2", "");
+                        startHomeActivity("2", "", "admin2");
                     } else {
                         String userId = db.loginWithDB(username, pwd);
                         if (userId != null) {
-                            startHomeActivity("", userId);
+                            startHomeActivity("", userId, username);
                         } else {
                             Toast.makeText(getApplicationContext(), "Enter username and pwd", Toast.LENGTH_SHORT).show();
 
@@ -66,10 +66,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    void startHomeActivity(String adminId, String userId) {
+    void startHomeActivity(String adminId, String userId, String username) {
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("id", userId);
         editor.putString("adminId", adminId);
+        editor.putString("username", username);
         editor.apply();
         editor.commit();
         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);

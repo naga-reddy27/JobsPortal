@@ -35,6 +35,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     private TextView txtNoData;
     private String adminId;
     private String userId;
+    private String username;
     private DBHelper db;
     private List<JobModel> jobList;
     private JobListAdapter adapter;
@@ -45,7 +46,7 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        setTitle("Home");
+
         fab = findViewById(R.id.fab_button);
         recyclerView = findViewById(R.id.recycler_view);
         txtNoData = findViewById(R.id.nodata);
@@ -57,11 +58,14 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         if (sp.contains("adminId") || sp.contains("id")) {
             adminId = sp.getString("adminId", "");
             userId = sp.getString("id", "");
+            username = sp.getString("username", "");
             Log.v("ADMIN ", "ADMIN ID :: " + adminId);
             if (!adminId.equals("")) {
+                setTitle("ADMIN" + " \n" + username);
                 fab.setVisibility(View.VISIBLE);
                 getJobListByAdminIdFromDb();
             } else if (!userId.equals("")) {
+                setTitle(username);
                 fab.setVisibility(View.GONE);
                 getAllJobsList();
             }
@@ -79,9 +83,10 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
     private void getAllJobsList() {
         Cursor cursor = db.getAllJobList();
         jobList = new ArrayList<>();
-        if (cursor.getCount() == 0) {
-            txtNoData.setVisibility(View.VISIBLE);
-            // Toast.makeText(getApplicationContext(), "No Data", Toast.LENGTH_SHORT).show();
+        if (cursor != null && cursor.getCount() == 0) {
+            if (jobList.size() == 0) {
+                txtNoData.setVisibility(View.VISIBLE);
+            }
         } else {
             txtNoData.setVisibility(View.GONE);
 
@@ -95,14 +100,16 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
                         cursor.getString(5),
                         cursor.getString(6),
                         cursor.getString(7),
+                        cursor.getString(10),
                         cursor.getString(9)
                 );
                 jobList.add(model);
                 Log.v(TAG, "JOBS LIST :: ");
-                if (jobList != null && jobList.size() > 0) {
-                    setAdapter();
-                }
+
             }
+        }
+        if (jobList != null) {
+            setAdapter("all");
         }
     }
 
@@ -110,8 +117,9 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         Cursor cursor = db.getJobListByAdminId(adminId);
         jobList = new ArrayList<>();
         if (cursor.getCount() == 0) {
-            txtNoData.setVisibility(View.VISIBLE);
-            // Toast.makeText(getApplicationContext(), "No Data", Toast.LENGTH_SHORT).show();
+            if (jobList.size() == 0) {
+                txtNoData.setVisibility(View.VISIBLE);
+            }
         } else {
             txtNoData.setVisibility(View.GONE);
 
@@ -125,19 +133,22 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
                         cursor.getString(5),
                         cursor.getString(6),
                         cursor.getString(7),
+                        cursor.getString(10),
                         cursor.getString(9)
                 );
                 jobList.add(model);
                 Log.v(TAG, "JOBS LIST :: ");
-                if (jobList != null && jobList.size() > 0) {
-                    setAdapter();
-                }
+
             }
+
+        }
+        if (jobList != null) {
+            setAdapter("jobByAdmin");
         }
     }
 
-    public void setAdapter() {
-        adapter = new JobListAdapter(HomeActivity.this, jobList, adminId, this);
+    public void setAdapter(String listType) {
+        adapter = new JobListAdapter(HomeActivity.this, jobList, adminId, userId, listType, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
         //    recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -159,14 +170,22 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.all_jobs) {
-            setAdapter();
-            // Toast.makeText(HomeActivity.this, "All Jobs Action clicked", Toast.LENGTH_LONG).show();
+            jobList.clear();
+            if (!adminId.equals("")) {
+                getJobListByAdminIdFromDb();
+            } else if (!userId.equals("")) {
+                getAllJobsList();
+            }
             return true;
         } else if (id == R.id.applied_jobs) {
-            // Toast.makeText(HomeActivity.this, "Applied Jobs Action clicked", Toast.LENGTH_LONG).show();
+            jobList.clear();
+            if (!adminId.equals("")) {
+                getAppliedJobListByAdminId();
+            } else if (!userId.equals("")) {
+                getAppliedJobListByUserId();
+            }
             return true;
         } else if (id == R.id.logout) {
-            // Toast.makeText(HomeActivity.this, "Logout", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(HomeActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -174,6 +193,78 @@ public class HomeActivity extends AppCompatActivity implements JobListAdapter.It
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void getAppliedJobListByUserId() {
+        Cursor cursor = db.getAppliedJobListByUserId("Applied");
+        jobList = new ArrayList<>();
+        if (cursor.getCount() == 0) {
+            if (jobList.size() == 0) {
+                txtNoData.setVisibility(View.VISIBLE);
+            }
+        } else {
+            while (cursor.moveToNext()) {
+                JobModel model = new JobModel(cursor.getString(1),
+                        cursor.getString(0),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(8),
+                        cursor.getString(5),
+                        cursor.getString(6),
+                        cursor.getString(7),
+                        cursor.getString(10),
+                        cursor.getString(9)
+                );
+                Log.v(TAG, "JOBS LIST :: " + model.getUserIds().contains(userId));
+
+                if (model.getUserIds().contains(userId)) {
+                    jobList.add(model);
+                }
+                if (jobList.size() == 0) {
+                    txtNoData.setVisibility(View.VISIBLE);
+                } else {
+                    txtNoData.setVisibility(View.GONE);
+                }
+
+            }
+
+        }
+        if (jobList != null) {
+            setAdapter("appliedJobsByUser");
+        }
+    }
+
+    private void getAppliedJobListByAdminId() {
+        Cursor cursor = db.getAppliedJobListByAdminId(adminId, "Applied");
+        jobList = new ArrayList<>();
+        if (cursor.getCount() == 0) {
+            if (jobList.size() == 0) {
+                txtNoData.setVisibility(View.VISIBLE);
+            }
+        } else {
+            txtNoData.setVisibility(View.GONE);
+            while (cursor.moveToNext()) {
+                JobModel model = new JobModel(cursor.getString(1),
+                        cursor.getString(0),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(8),
+                        cursor.getString(5),
+                        cursor.getString(6),
+                        cursor.getString(7),
+                        cursor.getString(10),
+                        cursor.getString(9)
+                );
+                jobList.add(model);
+                Log.v(TAG, "JOBS LIST :: ");
+
+            }
+        }
+        if (jobList != null) {
+            setAdapter("appliedJobsByAdmin");
+        }
     }
 
     @Override

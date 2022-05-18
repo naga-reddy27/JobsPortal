@@ -1,6 +1,7 @@
 package com.user.jobportal.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class JobModel implements Serializable {
     private String adminId;
@@ -13,10 +14,11 @@ public class JobModel implements Serializable {
     private String packageDetails;
     private String currentAddress;
     private String appliedStatus;
+    private String userIds;
 
     public JobModel(String adminId,String jobId, String jobName, String org,
                     String mobile, String email, String skillRequired,
-                    String packageDetails, String currentAddress, String appliedStatus) {
+                    String packageDetails, String currentAddress, String appliedStatus, String userIds) {
         this.adminId = adminId;
         this.jobId = jobId;
         this.jobName = jobName;
@@ -27,6 +29,7 @@ public class JobModel implements Serializable {
         this.packageDetails = packageDetails;
         this.currentAddress = currentAddress;
         this.appliedStatus = appliedStatus;
+        this.userIds = userIds;
     }
 
     public String getAdminId() {
@@ -107,5 +110,13 @@ public class JobModel implements Serializable {
 
     public void setAppliedStatus(String appliedStatus) {
         this.appliedStatus = appliedStatus;
+    }
+
+    public String getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(String userIds) {
+        this.userIds = userIds;
     }
 }

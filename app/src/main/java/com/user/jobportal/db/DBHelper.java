@@ -5,10 +5,20 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.provider.BaseColumns;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DBHelper extends SQLiteOpenHelper {
     private Context context;
@@ -29,6 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_REQUIRED_SKILLS = "required_skills";
     private static final String COLUMN_PACKAGE_DETAILS = "package_details";
     private static final String COLUMN_APPLIED_STATUS = "status";
+    private static final String COLUMN_APPLIED_USER_ID = "applied_user_id";
 
     private static final String TABLE_USER = "user_table";
     private static final String COLUMN_USER_NAME = "user_name";
@@ -37,6 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COLUMN_USER_EMAIL = "user_email";
     private static final String COLUMN_USER_PWD = "user_pwd";
     private static final String COLUMN_USER_ADDRESS = "user_address";
+
 
     public DBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -65,6 +77,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 // 8
                 COLUMN_EMAIL + " TEXT, " +
                 //9
+                COLUMN_APPLIED_USER_ID + " TEXT, " +
+                //10
                 COLUMN_APPLIED_STATUS + " TEXT); ";
 
         String user = "CREATE TABLE " + TABLE_USER +
@@ -106,6 +120,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_PACKAGE_DETAILS, packageDetails);
         contentValues.put(COLUMN_CURRENT_ADDRESS, currentAddress);
         contentValues.put(COLUMN_APPLIED_STATUS, appliedStatus);
+        contentValues.put(COLUMN_APPLIED_USER_ID, "");
         long result = db.insert(TABLE_NAME_JOB, null, contentValues);
 
         return result;
@@ -113,6 +128,43 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Cursor getJobListByAdminId(String adminId) {
         String query = " select * from " + TABLE_NAME_JOB + " WHERE " + COLUMN_ADMIN_ID + "=" + adminId;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public String getUserNameById(String userId) {
+        //    String query = " select * from " + TABLE_USER + " WHERE " + COLUMN_USER_ID + "=" + userId;
+        String query = "Select * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_ID + " LIKE " + "'" + userId + "'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        String userName = null;
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        if (cursor != null && cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                userName = cursor.getString(1);
+            }
+        }
+        return userName;
+    }
+
+    public Cursor getAppliedJobListByAdminId(String adminId, String status) {
+        String query = "Select * FROM " + TABLE_NAME_JOB + " WHERE " + COLUMN_ADMIN_ID + " LIKE " + "'" + adminId + "'" + " AND " + COLUMN_APPLIED_STATUS + " LIKE " + "'" + status + "'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public Cursor getAppliedJobListByUserId(String status) {
+        String query = "Select * FROM " + TABLE_NAME_JOB + " WHERE " + COLUMN_APPLIED_STATUS + " LIKE " + "'" + status + "'";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
         if (db != null) {
@@ -131,7 +183,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public long updateJob(String adminId, String jobId, String jobName, String org, String mobile, String email, String skillsRequired, String packageDetails, String currentAddress, String appliedStatus) {
+    public long updateJob(String adminId, String jobId, String jobName, String org, String mobile, String email, String skillsRequired, String packageDetails, String currentAddress, String appliedStatus, String appliedUserId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_JOB_ID, jobId);
@@ -144,7 +196,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_PACKAGE_DETAILS, packageDetails);
         contentValues.put(COLUMN_CURRENT_ADDRESS, currentAddress);
         contentValues.put(COLUMN_APPLIED_STATUS, appliedStatus);
-
+        contentValues.put(COLUMN_APPLIED_USER_ID, appliedUserId);
         // long result = db.update(TABLE_NAME_JOB, contentValues, BaseColumns._ID + "=?", new String[]{jobId});
         String whereClause = BaseColumns._ID + " = ? AND " + "admin_id" + " = ?"; // HERE ARE OUR CONDITONS STARTS
         String[] whereArgs = {jobId, adminId};
@@ -152,6 +204,30 @@ public class DBHelper extends SQLiteOpenHelper {
                 contentValues,
                 whereClause,
                 whereArgs);
+    }
+
+    /* @RequiresApi(api = Build.VERSION_CODES.N)*/
+    public ArrayList getAppliedJobUserIdList(String jobId) {
+        String query = " select * from " + TABLE_NAME_JOB + " WHERE " + COLUMN_JOB_ID + "=" + jobId;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        ArrayList aList = new ArrayList<>();
+        if (db != null) {
+            cursor = db.rawQuery(query, null);
+        }
+        if (cursor.getCount() == 0) {
+            Toast.makeText(context, "No Data", Toast.LENGTH_SHORT).show();
+        } else {
+            while (cursor.moveToNext()) {
+                String str = "" + cursor.getString(9);
+                aList = new ArrayList(Arrays.asList(str.trim().split(",")));
+                for (int i = 0; i < aList.size(); i++) {
+                    System.out.println(" -->" + aList.get(i));
+                }
+                Log.v("DB", "DATA FOUND :: " + aList.toString() + "\n");
+            }
+        }
+        return aList;
     }
 
     public long deleteJob(String id) {
